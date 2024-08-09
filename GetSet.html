@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getter and Setter Generator</title>
+    <style>
+        body {
+            background-color: #e8f4f8; /* Softer light blue background */
+            font-family: Arial, sans-serif;
+            color: #333; /* Darker text for better contrast */
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #444;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"], select, textarea {
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        pre {
+            background-color: #d0e7f3;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Getter and Setter Generator</h1>
+
+    <!-- Single Property Generator -->
+    <form id="generator-form">
+        <h2>Generate Single Getter and Setter</h2>
+        <label for="property-name">Property Name:</label>
+        <input type="text" id="property-name" name="property-name" required>
+        <br><br>
+        <label for="property-type">Property Type:</label>
+        <input type="text" id="property-type" name="property-type" value="String" required>
+        <select id="type-selector">
+            <option value="String" selected>String</option>
+            <option value="int">int</option>
+            <option value="double">double</option>
+            <option value="boolean">boolean</option>
+            <option value="Long">Long</option>
+            <option value="ArrayList<String>">ArrayList&lt;String&gt;</option>
+            <option value="JsonObject">JsonObject</option>
+            <option value="JsonArray">JsonArray</option>
+        </select>
+        <br><br>
+        <button type="submit">Generate</button>
+    </form>
+
+    <h2>Generated Code</h2>
+    <pre id="output"></pre>
+
+    <!-- Multiple Properties Generator -->
+    <form id="batch-generator-form">
+        <h2>Generate Getters and Setters for Multiple Properties</h2>
+        <label for="properties">Object Members (One per line):</label>
+        <textarea id="properties" name="properties" rows="10" placeholder="Example:&#10;String a;&#10;int b;&#10;boolean c;" required></textarea>
+        <br><br>
+        <button type="submit">Generate</button>
+    </form>
+
+    <h2>Generated Code for Multiple Properties</h2>
+    <pre id="batch-output"></pre>
+
+    <script>
+        // Single Property Getter and Setter
+        const propertyTypeInput = document.getElementById('property-type');
+        const typeSelector = document.getElementById('type-selector');
+
+        typeSelector.addEventListener('change', function() {
+            propertyTypeInput.value = typeSelector.value;
+        });
+
+        document.getElementById('generator-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const propertyName = document.getElementById('property-name').value;
+            const propertyType = propertyTypeInput.value;
+
+            const capitalizedProperty = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
+
+            const getter = `public ${propertyType} get${capitalizedProperty}() {
+    return this.${propertyName};
+}`;
+
+            const setter = `public void set${capitalizedProperty}(${propertyType} ${propertyName}) {
+    this.${propertyName} = ${propertyName};
+}`;
+
+            document.getElementById('output').textContent = getter + '\n\n' + setter;
+        });
+
+        // Multiple Properties Getter and Setter
+        document.getElementById('batch-generator-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const properties = document.getElementById('properties').value.trim().split('\n');
+            let output = '';
+
+            properties.forEach(line => {
+                const [type, nameWithSemicolon] = line.trim().split(' ');
+                if (type && nameWithSemicolon) {
+                    const propertyName = nameWithSemicolon.replace(';', '');
+                    const capitalizedProperty = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
+
+                    const getter = `public ${type} get${capitalizedProperty}() {
+    return this.${propertyName};
+}`;
+
+                    const setter = `public void set${capitalizedProperty}(${type} ${propertyName}) {
+    this.${propertyName} = ${propertyName};
+}`;
+
+                    output += getter + '\n\n' + setter + '\n\n';
+                }
+            });
+
+            document.getElementById('batch-output').textContent = output.trim();
+        });
+    </script>
+</body>
+</html>
